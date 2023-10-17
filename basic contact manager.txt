@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure to represent a contact
+struct Contact {
+    char name[50];
+    char phone[20];
+    char email[50];
+};
+
+// Function to add a new contact
+void addContact(struct Contact contacts[], int *contactCount) {
+    struct Contact newContact;
+
+    printf("Enter Name: ");
+    scanf("%s", newContact.name);
+    printf("Enter Phone: ");
+    scanf("%s", newContact.phone);
+    printf("Enter Email: ");
+    scanf("%s", newContact.email);
+
+    contacts[(*contactCount)++] = newContact;
+    printf("Contact added successfully!\n");
+}
+
+// Function to edit an existing contact
+void editContact(struct Contact contacts[], int contactCount, char *name) {
+    for (int i = 0; i < contactCount; i++) {
+        if (strcmp(contacts[i].name, name) == 0) {
+            printf("Enter New Phone: ");
+            scanf("%s", contacts[i].phone);
+            printf("Enter New Email: ");
+            scanf("%s", contacts[i].email);
+            printf("Contact edited successfully!\n");
+            return;
+        }
+    }
+    printf("Contact not found!\n");
+}
+
+// Function to search for contacts
+void searchContact(struct Contact contacts[], int contactCount, char *keyword) {
+    printf("Search Results:\n");
+    for (int i = 0; i < contactCount; i++) {
+        if (strstr(contacts[i].name, keyword) || strstr(contacts[i].email, keyword)) {
+            printf("Name: %s, Phone: %s, Email: %s\n", contacts[i].name, contacts[i].phone, contacts[i].email);
+        }
+    }
+}
+
+// Function to sort contacts by name
+void sortContacts(struct Contact contacts[], int contactCount) {
+    for (int i = 0; i < contactCount - 1; i++) {
+        for (int j = i + 1; j < contactCount; j++) {
+            if (strcmp(contacts[i].name, contacts[j].name) > 0) {
+                // Swap contacts[i] and contacts[j]
+                struct Contact temp = contacts[i];
+                contacts[i] = contacts[j];
+                contacts[j] = temp;
+            }
+        }
+    }
+    printf("Contacts sorted by name.\n");
+}
+
+int main() {
+    struct Contact contacts[100]; // Assume a maximum of 100 contacts
+    int contactCount = 0;
+
+    while (1) {
+        printf("\nContact Manager\n");
+        printf("1. Add Contact\n");
+        printf("2. Edit Contact\n");
+        printf("3. Search Contact\n");
+        printf("4. Sort Contacts\n");
+        printf("5. Exit\n");
+
+        int choice;
+        char keyword[50];
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addContact(contacts, &contactCount);
+                break;
+            case 2:
+                printf("Enter Name to edit: ");
+                scanf("%s", keyword);
+                editContact(contacts, contactCount, keyword);
+                break;
+            case 3:
+                printf("Enter Search Keyword: ");
+                scanf("%s", keyword);
+                searchContact(contacts, contactCount, keyword);
+                break;
+            case 4:
+                sortContacts(contacts, contactCount);
+                break;
+            case 5:
+                return 0; // Exit the program
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
