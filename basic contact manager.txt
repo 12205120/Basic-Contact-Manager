@@ -1,109 +1,141 @@
-#include <stdio.h>
-#include <string.h>
+import java.util.*;
 
-// Structure to represent a contact
-struct Contact {
-    char name[50];
-    char phone[20];
-    char email[50];
-};
+    class Contact {
+        private String name;
+        private String phone;
+        private String email;
 
-// Function to add a new contact
-void addContact(struct Contact contacts[], int *contactCount) {
-    struct Contact newContact;
+        public Contact(String name, String phone, String email) {
+            this.name = name;
+            this.phone = phone;
+            this.email = email;
+        }
 
-    printf("Enter Name: ");
-    scanf("%s", newContact.name);
-    printf("Enter Phone: ");
-    scanf("%s", newContact.phone);
-    printf("Enter Email: ");
-    scanf("%s", newContact.email);
+        public String getName() {
+            return name;
+        }
 
-    contacts[(*contactCount)++] = newContact;
-    printf("Contact added successfully!\n");
-}
+        public String getPhone() {
+            return phone;
+        }
 
-// Function to edit an existing contact
-void editContact(struct Contact contacts[], int contactCount, char *name) {
-    for (int i = 0; i < contactCount; i++) {
-        if (strcmp(contacts[i].name, name) == 0) {
-            printf("Enter New Phone: ");
-            scanf("%s", contacts[i].phone);
-            printf("Enter New Email: ");
-            scanf("%s", contacts[i].email);
-            printf("Contact edited successfully!\n");
-            return;
+        public String getEmail() {
+            return email;
+        }
+
+        @Override
+        public String toString() {
+            return "Name: " + name + "\nPhone: " + phone + "\nEmail: " + email + "\n";
         }
     }
-    printf("Contact not found!\n");
-}
 
-// Function to search for contacts
-void searchContact(struct Contact contacts[], int contactCount, char *keyword) {
-    printf("Search Results:\n");
-    for (int i = 0; i < contactCount; i++) {
-        if (strstr(contacts[i].name, keyword) || strstr(contacts[i].email, keyword)) {
-            printf("Name: %s, Phone: %s, Email: %s\n", contacts[i].name, contacts[i].phone, contacts[i].email);
+    public class ContactManager {
+        private TreeMap<String, Contact> contacts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        public void addContact(String name, String phone, String email) {
+            Contact contact = new Contact(name, phone, email);
+            contacts.put(name, contact);
+            System.out.println("Contact added successfully!");
         }
-    }
-}
 
-// Function to sort contacts by name
-void sortContacts(struct Contact contacts[], int contactCount) {
-    for (int i = 0; i < contactCount - 1; i++) {
-        for (int j = i + 1; j < contactCount; j++) {
-            if (strcmp(contacts[i].name, contacts[j].name) > 0) {
-                // Swap contacts[i] and contacts[j]
-                struct Contact temp = contacts[i];
-                contacts[i] = contacts[j];
-                contacts[j] = temp;
+        public void editContact(String oldName, String newName, String newPhone, String newEmail) {
+            Contact contact = contacts.remove(oldName);
+            if (contact != null) {
+                contact = new Contact(newName, newPhone, newEmail);
+                contacts.put(newName, contact);
+                System.out.println("Contact updated successfully!");
+            } else {
+                System.out.println("Contact not found.");
+            }
+        }
+
+        public void displayContacts() {
+            for (Contact contact : contacts.values()) {
+                System.out.println(contact);
+            }
+        }
+
+        public void searchContacts(String keyword) {
+            ArrayList<Contact> results = new ArrayList<>();
+            for (Contact contact : contacts.values()) {
+                if (contact.getName().toLowerCase().contains(keyword.toLowerCase())
+                        || contact.getPhone().contains(keyword)
+                        || contact.getEmail().toLowerCase().contains(keyword.toLowerCase())) {
+                    results.add(contact);
+                }
+            }
+
+            if (!results.isEmpty()) {
+                System.out.println("Search results for '" + keyword + "':");
+                for (Contact result : results) {
+                    System.out.println(result);
+                }
+            } else {
+                System.out.println("No matching contacts found.");
+            }
+        }
+
+        public void sortContactsByName() {
+            // Already sorted due to TreeMap
+            System.out.println("Contacts sorted by name.");
+        }
+
+        public static void main(String[] args) {
+            ContactManager manager = new ContactManager();
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                System.out.println("\nContact Manager Menu:");
+                System.out.println("1. Add Contact");
+                System.out.println("2. Edit Contact");
+                System.out.println("3. Display Contacts");
+                System.out.println("4. Search Contacts");
+                System.out.println("5. Sort Contacts by Name");
+                System.out.println("6. Exit");
+                System.out.print("Enter your choice: ");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter name: ");
+                        String name = scanner.nextLine();
+                        System.out.print("Enter phone number: ");
+                        String phone = scanner.nextLine();
+                        System.out.print("Enter email address: ");
+                        String email = scanner.nextLine();
+                        manager.addContact(name, phone, email);
+                        break;
+                    case 2:
+                        System.out.print("Enter the name of the contact to edit: ");
+                        String oldName = scanner.nextLine();
+                        System.out.print("Enter new name: ");
+                        String newName = scanner.nextLine();
+                        System.out.print("Enter new phone number: ");
+                        String newPhone = scanner.nextLine();
+                        System.out.print("Enter new email address: ");
+                        String newEmail = scanner.nextLine();
+                        manager.editContact(oldName, newName, newPhone, newEmail);
+                        break;
+                    case 3:
+                        manager.displayContacts();
+                        break;
+                    case 4:
+                        System.out.print("Enter a keyword to search: ");
+                        String keyword = scanner.nextLine();
+                        manager.searchContacts(keyword);
+                        break;
+                    case 5:
+                        manager.sortContactsByName();
+                        break;
+                    case 6:
+                        System.out.println("Exiting Contact Manager. Goodbye!");
+                        scanner.close();
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
             }
         }
     }
-    printf("Contacts sorted by name.\n");
-}
-
-int main() {
-    struct Contact contacts[100]; // Assume a maximum of 100 contacts
-    int contactCount = 0;
-
-    while (1) {
-        printf("\nContact Manager\n");
-        printf("1. Add Contact\n");
-        printf("2. Edit Contact\n");
-        printf("3. Search Contact\n");
-        printf("4. Sort Contacts\n");
-        printf("5. Exit\n");
-
-        int choice;
-        char keyword[50];
-
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                addContact(contacts, &contactCount);
-                break;
-            case 2:
-                printf("Enter Name to edit: ");
-                scanf("%s", keyword);
-                editContact(contacts, contactCount, keyword);
-                break;
-            case 3:
-                printf("Enter Search Keyword: ");
-                scanf("%s", keyword);
-                searchContact(contacts, contactCount, keyword);
-                break;
-            case 4:
-                sortContacts(contacts, contactCount);
-                break;
-            case 5:
-                return 0; // Exit the program
-            default:
-                printf("Invalid choice. Please try again.\n");
-        }
-    }
-
-    return 0;
-}
